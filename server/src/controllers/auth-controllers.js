@@ -1,6 +1,9 @@
 import bcrypt from 'bcryptjs';
 import { AuthModel } from '../models/auth-models.js';
 import { createToken } from '../libs/create-token.js';
+import { sendMail } from '../libs/send-mail.js';
+import { verifyToken } from '../libs/verify-token.js';
+import { API_URL } from '../config.js';
 
 export const register = async (req, res) => {
    try {
@@ -21,7 +24,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
    try {
-      const user = await AuthModel.login(req.body);
+      const user = await AuthModel.login(req.body.email);
       if (user === null)
          return res.status(400).json({ error: 'Este correo no existe' });
 
@@ -44,6 +47,50 @@ export const login = async (req, res) => {
    } catch (error) {
       console.log(error);
       return res.status(500).json(error.message);
+   }
+};
+
+export const forgotPassword = async (req, res) => {
+   try {
+      const user = await AuthModel.login(req.body.email);
+
+      if (user === null)
+         return res.status(404).json({
+            message: 'Usuario no encontrado',
+         });
+      const token = await createToken({ id: user.user_id }, 900);
+
+      await sendMail(
+         user.email,
+         'Restablecer Contraseña',
+         `Para restablecer su contraseña,haga click en el siguiente enlace:\n\n
+           ${API_URL}/reset-password/${token}`,
+         (err, info) => {
+            if (err) return res.status(500).json(err);
+            return res.status(200).json({
+               message: `Correo enviado correctamente a ${info.envelope.to[0]}`,
+            });
+         }
+      );
+   } catch (error) {
+      return res.status(500).json({
+         message: error.message,
+      });
+   }
+};
+
+export const resetPassword = async (req, res) => {
+   const { token } = req.params;
+   const { password } = req.body;
+   try {
+      const { id } = await verifyToken(token);
+
+      const updatePassword = await AuthModel.resetPassword(id, password);
+      res.send({
+         updatePassword,
+      });
+   } catch (error) {
+      return res.status(400).json({ status: 'Fallido', error });
    }
 };
 

@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import {
+   forgotPassword,
    login,
    logout,
    profile,
    register,
+   resetPassword,
 } from '../controllers/auth-controllers.js';
 import { authVerify } from '../middlewares/auth-verify.js';
 import { validateSchema } from '../middlewares/validate-schema.js';
@@ -13,6 +15,16 @@ const authRouter = Router();
 
 authRouter.post('/register', validateSchema(registerSchema), register);
 authRouter.post('/login', validateSchema(loginSchema), login);
+authRouter.post(
+   '/forgot-password',
+   validateSchema(registerSchema.partial()),
+   forgotPassword
+);
+authRouter.post(
+   '/reset-password/:token',
+   validateSchema(loginSchema.partial()),
+   resetPassword
+);
 authRouter.post('/logout', logout);
 authRouter.get('/profile', authVerify, profile);
 

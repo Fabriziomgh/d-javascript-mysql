@@ -26,7 +26,7 @@ export class AuthModel {
          console.log(error.message);
       }
    }
-   static async login({ email }) {
+   static async login(email) {
       try {
          const [user] = await pool.query(
             `SELECT * FROM usuarios WHERE email = ?`,
@@ -35,7 +35,7 @@ export class AuthModel {
          if (user.length === 0) return null;
          return user[0];
       } catch (error) {
-         console.log(error.message);
+         return error;
       }
    }
    static async profile(id) {
@@ -47,7 +47,19 @@ export class AuthModel {
          if (user.length === 0) return null;
          return user[0];
       } catch (error) {
-         console.log(error.message);
+         return error;
+      }
+   }
+   static async resetPassword(id, newPassword) {
+      try {
+         const newPasswordHash = await bcrypt.hash(newPassword, 10);
+         const [user] = await pool.query(
+            `UPDATE usuarios SET password = IFNULL(?,password) WHERE user_id = ?`,
+            [newPasswordHash, id]
+         );
+         return user;
+      } catch (error) {
+         return error;
       }
    }
 }

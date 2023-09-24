@@ -29,6 +29,9 @@ dependencies:
   mysql2:
     specifier: ^3.6.1
     version: 3.6.1
+  nodemailer:
+    specifier: ^6.9.5
+    version: 6.9.5
   zod:
     specifier: ^3.22.2
     version: 3.22.2
@@ -492,6 +495,11 @@ packages:
   /negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /nodemailer@6.9.5:
+    resolution: {integrity: sha512-/dmdWo62XjumuLc5+AYQZeiRj+PRR8y8qKtFCOyuOl1k/hckZd8durUUHs/ucKx6/8kN+wFxqKJlQ/LK/qR5FA==}
+    engines: {node: '>=6.0.0'}
     dev: false
 
   /object-assign@4.1.1:
