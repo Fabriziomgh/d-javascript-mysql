@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth-routes.js';
 import productsRouter from './routes/product-routes.js';
+import ubicacionesRouter from './routes/ubicaciones-routes.js';
 
 const app = express();
 
@@ -14,5 +15,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/ubicaciones', ubicacionesRouter);
 
 export default app;
