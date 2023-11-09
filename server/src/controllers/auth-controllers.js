@@ -9,7 +9,9 @@ export const register = async (req, res) => {
    try {
       const user = await AuthModel.create(req.body);
       if (user === null)
-         return res.status(400).json({ error: 'Este correo ya existe' });
+         return res
+            .status(400)
+            .json({ error: 'Este correo o usuario ya existe' });
 
       const token = await createToken({ id: user.user_id });
       res.cookie('token', token);
@@ -24,9 +26,9 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
    try {
-      const user = await AuthModel.login(req.body.email);
+      const user = await AuthModel.login(req.body.username);
       if (user === null)
-         return res.status(400).json({ error: 'Este correo no existe' });
+         return res.status(400).json({ error: 'Este usuario no existe' });
 
       const matchPassword = await bcrypt.compare(
          req.body.password,
@@ -110,4 +112,16 @@ export const profile = async (req, res) => {
    } catch (error) {
       console.log(error.message);
    }
+};
+export const verifyT = async (req, res) => {
+   const { token } = req.cookies;
+
+   if (!token) return res.status(401).json({ message: 'No token provided' });
+   const verify = await verifyToken(token);
+   if (!verify) return res.status(401);
+   const { id } = verify;
+   const user = await AuthModel.profile(id);
+   if (!user) return res.status(401);
+
+   return res.json(user);
 };

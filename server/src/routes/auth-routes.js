@@ -6,6 +6,7 @@ import {
    profile,
    register,
    resetPassword,
+   verifyT,
 } from '../controllers/auth-controllers.js';
 import { authVerify } from '../middlewares/auth-verify.js';
 import { validateSchema } from '../middlewares/validate-schema.js';
@@ -27,5 +28,6 @@ authRouter.post(
 );
 authRouter.post('/logout', logout);
 authRouter.get('/profile', authVerify, profile);
+authRouter.get('/verify', verifyT);
 
 export default authRouter;

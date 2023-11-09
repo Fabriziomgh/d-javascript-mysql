@@ -7,11 +7,14 @@ export class AuthModel {
 
       try {
          const [checkEmail] = await pool.query(
-            ` 
-            SELECT * FROM usuarios WHERE email = ?`,
+            `SELECT * FROM usuarios WHERE email = ?`,
             [email]
          );
-         if (checkEmail.length > 0) return null;
+         const [checkUsername] = await pool.query(
+            `SELECT * FROM usuarios WHERE username = ?`,
+            [username]
+         );
+         if (checkEmail.length > 0 || checkUsername.length > 0) return null;
          const hashPassword = await bcrypt.hash(password, 10);
          const [result] = await pool.query(
             `INSERT INTO usuarios (username, email, password) VALUES (?,?,?)`,
@@ -26,11 +29,11 @@ export class AuthModel {
          console.log(error.message);
       }
    }
-   static async login(email) {
+   static async login(username) {
       try {
          const [user] = await pool.query(
-            `SELECT * FROM usuarios WHERE email = ?`,
-            [email]
+            `SELECT * FROM usuarios WHERE username = ?`,
+            [username]
          );
          if (user.length === 0) return null;
          return user[0];
