@@ -1,14 +1,18 @@
 import { Outlet, Navigate } from 'react-router-dom';
-import { useAuthStore } from '../store/auth';
+import Navbar from './Navbar';
+import { useAuth } from '../hooks/auth';
+import Spinner from './Spinner';
 const AuthenticateLayout = () => {
-   const isAuthenticate = useAuthStore((state) => state.isAuthenticate);
-   // const loading = useAuthStore((state) => state.loading);
-   // if (loading) return <h1>Loading...</h1>;
-   if (!isAuthenticate) return <Navigate to="/" />;
+   const { loading, isAuthenticated } = useAuth();
+   if (loading) return <Spinner />;
+
+   if (!loading && !isAuthenticated) return <Navigate to="/" />;
    return (
-      <div>
-         <div>navbar</div>
-         <div>{<Outlet />}</div>
+      <div className="flex ">
+         <div>
+            <Navbar />
+         </div>
+         <div className="w-full">{<Outlet />}</div>
       </div>
    );
 };

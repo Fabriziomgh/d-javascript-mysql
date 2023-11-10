@@ -4,6 +4,7 @@ import {
    deleteProduct,
    getAllProducts,
    getProduct,
+   getResources,
    updateProduct,
 } from '../controllers/product-controllers.js';
 import { productSchema } from '../schemas/product-schemas.js';
@@ -12,6 +13,7 @@ import { authVerify } from '../middlewares/auth-verify.js';
 
 const productsRouter = Router();
 
+productsRouter.get('/resource', getResources);
 productsRouter.get('/', authVerify, getAllProducts);
 productsRouter.get('/:id', authVerify, getProduct);
 productsRouter.post(

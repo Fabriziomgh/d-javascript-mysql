@@ -1,15 +1,12 @@
 import { LockIcon, UserIcon } from '../components/Icons';
+import logoAlcaldia from '../assets/logo_alcaldia_2-removebg-preview.png';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import logoAlcaldia from '../assets/logo_alcaldia_2-removebg-preview.png';
 import { useForm } from 'react-hook-form';
-import { useAuthStore } from '../store/auth';
 import { useEffect } from 'react';
+import { useAuth } from '../hooks/auth';
 const LoginPage = () => {
-   const login = useAuthStore((state) => state.login);
-   const loginErrors = useAuthStore((state) => state.errors);
-   const isAuthenticate = useAuthStore((state) => state.isAuthenticate);
-   const checkLogin = useAuthStore((state) => state.checkLogin);
+   const { login, errors: loginErrors, isAuthenticated } = useAuth();
    const {
       register,
       handleSubmit,
@@ -21,11 +18,9 @@ const LoginPage = () => {
    };
    const navigate = useNavigate();
    useEffect(() => {
-      if (isAuthenticate) navigate('/inicio');
-   }, [isAuthenticate]);
-   useEffect(() => {
-      checkLogin();
-   }, []);
+      if (isAuthenticated) navigate('/inicio');
+   }, [isAuthenticated]);
+
    return (
       <div className="flex items-center  justify-center min-h-screen ">
          <div>

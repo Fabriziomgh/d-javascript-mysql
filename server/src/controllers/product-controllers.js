@@ -1,5 +1,15 @@
 import { ProductsModel } from '../models/product-models.js';
 
+export const getResources = async (req, res) => {
+   try {
+      const resources = await ProductsModel.getResources();
+      return res.status(200).json(resources);
+   } catch (error) {
+      return res.status(500).json({
+         message: 'Error de servidor',
+      });
+   }
+};
 export const getAllProducts = async (req, res) => {
    const page = req.query.page || 1;
    const limit = 10;

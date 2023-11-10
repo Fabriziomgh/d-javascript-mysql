@@ -8,3 +8,4 @@ const authRequest = axios.create({
 
 export const loginRequest = (data) => authRequest.post('/login', data);
 export const verifyTokenRequest = () => authRequest.get(`/verify`);
+export const logoutRequest = () => authRequest.post('/logout');

@@ -83,4 +83,12 @@ export class ProductsModel {
          return error;
       }
    }
+   static async getResources() {
+      try {
+         const [ubicaciones] = await pool.query(`select * from ubicaciones`);
+         return { ubicaciones };
+      } catch (error) {
+         return error;
+      }
+   }
 }
