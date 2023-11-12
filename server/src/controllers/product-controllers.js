@@ -11,15 +11,8 @@ export const getResources = async (req, res) => {
    }
 };
 export const getAllProducts = async (req, res) => {
-   const page = req.query.page || 1;
-   const limit = 10;
-   const offset = (page - 1) * limit;
-   const { search } = req.query;
    try {
-      const searchParams = search ? { search } : { limit, offset };
-      const method = search ? 'getProductBySearch' : 'getAllProducts';
-
-      const products = await ProductsModel[method](searchParams);
+      const products = await ProductsModel.getAllProducts();
 
       if (products.length === 0)
          return res.status(404).json({
@@ -35,6 +28,7 @@ export const getAllProducts = async (req, res) => {
       });
    }
 };
+
 export const getProduct = async (req, res) => {
    const { id } = req.params;
    try {

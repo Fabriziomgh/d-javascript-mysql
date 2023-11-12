@@ -1,19 +1,65 @@
+import { Toaster } from 'react-hot-toast';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useProducts } from '../hooks/products';
+import { useEffect } from 'react';
 const AddProductPage = () => {
-   const { createProduct, ubicaciones } = useProducts();
-   console.log(ubicaciones.ubicaciones);
+   const {
+      products,
+      createProduct,
+      ubicaciones,
+      getAllResources,
+      updateProduct,
+      getAllProducts,
+      getProduct,
+   } = useProducts();
+   const navigate = useNavigate();
+   const params = useParams();
    const {
       register,
       handleSubmit,
+      setValue,
       formState: { errors },
+      reset,
    } = useForm();
-   const onSubmit = (data) => {
-      createProduct(data);
-      console.log(data);
+   useEffect(() => {
+      async function get() {
+         try {
+            if (!params.id) return;
+            const { product } = await getProduct(params.id);
+            const { producto, cantidad, descripcion, serial, id_ubicacion } =
+               product[0];
+            setValue('producto', producto);
+            setValue('cantidad', cantidad);
+            setValue('descripcion', descripcion);
+            setValue('serial', serial);
+            setValue('id_ubicacion', id_ubicacion);
+         } catch (error) {
+            console.log(error);
+         }
+      }
+      get();
+   }, []);
+   const onSubmit = async (data) => {
+      if (params.id) {
+         const update = await updateProduct(params.id, data);
+         console.log(update);
+         navigate('/inventario');
+      } else {
+         const response = await createProduct(data);
+         if (response.status === 201) {
+            reset();
+         }
+      }
    };
+   useEffect(() => {
+      getAllResources();
+      getAllProducts();
+   }, []);
+
    return (
       <div className="flex items-center  justify-center min-h-screen ">
+         <Toaster />
          <div className="flex flex-col max-w-md px-4 py-8 bg-white rounded-lg shadow ">
             <div className="self-center  text-2xl  font-bold text-gray-800  ">
                Agregar producto al inventario
@@ -36,7 +82,7 @@ const AddProductPage = () => {
                               },
                            })}
                            type="text"
-                           className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-400 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:border-transparent"
+                           className=" rounded-lg flex-1 appearance-none border border-gray-500 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:border-transparent"
                            placeholder="Producto..."
                         />
                      </div>
@@ -55,13 +101,27 @@ const AddProductPage = () => {
                                  value: true,
                                  message: 'Este campo es requerido',
                               },
+                              pattern: {
+                                 value: /^[0-9]+$/,
+                                 message: 'Solo se aceptan valores numericos',
+                              },
                               minLength: {
                                  value: 5,
                                  message: 'Minimo 5 caracteres',
                               },
+                              validate: {
+                                 checkSerial: (value) => {
+                                    if (params.id) return true;
+                                    return products?.products?.some(
+                                       (product) => product.serial === value
+                                    )
+                                       ? 'Este serial ya existe'
+                                       : true;
+                                 },
+                              },
                            })}
                            type="text"
-                           className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-400 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2  focus:border-transparent"
+                           className=" rounded-lg  flex-1 appearance-none border border-gray-500 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2  focus:"
                            placeholder="Serial..."
                         />
                         {errors.serial && (
@@ -74,22 +134,51 @@ const AddProductPage = () => {
                         <span className="py-2">Ubicación</span>
                         <select
                            {...register('id_ubicacion')}
-                           className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-400 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2  focus:border-transparent"
+                           className=" rounded-lg  flex-1 appearance-none border border-gray-500 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2  focus:"
                         >
-                           {ubicaciones.ubicaciones.map(
-                              ({ id_ubicacion, ubicacion }) => (
-                                 <option
-                                    key={id_ubicacion}
-                                    value={id_ubicacion}
-                                 >
-                                    {ubicacion}
-                                 </option>
+                           {ubicaciones?.ubicaciones?.length === 0 ? (
+                              <div>Cargando</div>
+                           ) : (
+                              ubicaciones?.ubicaciones?.map(
+                                 ({ id_ubicacion, ubicacion }) => (
+                                    <option
+                                       key={id_ubicacion}
+                                       value={id_ubicacion}
+                                    >
+                                       {ubicacion}
+                                    </option>
+                                 )
                               )
                            )}
                         </select>
                         {errors.ubicacion && (
                            <small className="text-red-500 py-2">
                               {errors.ubicacion?.message}
+                           </small>
+                        )}
+                     </div>
+                     <div className=" relative ">
+                        <span className="py-2">Cantidad</span>
+                        <input
+                           {...register('cantidad', {
+                              required: {
+                                 value: true,
+                                 message: 'Este campo es requerido',
+                              },
+                              validate: {
+                                 checkQuantity: (value) => {
+                                    return value > 0
+                                       ? true
+                                       : 'La cantidad debe un número positivo';
+                                 },
+                              },
+                           })}
+                           type="number"
+                           className=" rounded-lg  flex-1 appearance-none border border-gray-500 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2  focus:"
+                        />
+                        {errors.cantidad && (
+                           <small className="text-red-500 py-2">
+                              {errors.cantidad?.message}
                            </small>
                         )}
                      </div>
@@ -108,7 +197,7 @@ const AddProductPage = () => {
                                  message: 'Minimo 5 caracteres',
                               },
                            })}
-                           className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-400 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:border-transparent"
+                           className=" rounded-lg  flex-1 appearance-none border border-gray-500 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:"
                         ></textarea>
                         {errors.descripcion && (
                            <small className="text-red-500 py-2">

@@ -1,9 +1,10 @@
 import { SearchIcon } from '../components/Icons';
 import { useEffect, useState } from 'react';
-import Table from '../components/Table';
 import { useProducts } from '../hooks/products';
+import Table from '../components/Table';
+import { Link } from 'react-router-dom';
 const InventarioPage = () => {
-   const { products } = useProducts();
+   const { products, getAllProducts, loading, deleteProduct } = useProducts();
    const [sorting, setSorting] = useState([]);
    const [filtering, setFiltering] = useState('');
    const columns = [
@@ -14,6 +15,10 @@ const InventarioPage = () => {
       {
          header: 'Producto',
          accessorKey: 'producto',
+      },
+      {
+         header: 'Cantidad',
+         accessorKey: 'cantidad',
       },
       {
          header: 'Descripcion',
@@ -35,16 +40,14 @@ const InventarioPage = () => {
          header: 'Acciones',
          cell: (row) => (
             <div className="flex gap-2">
-               <button
-                  onClick={() => console.log('Editar', row)}
+               <Link
+                  to={`/modificar-producto/${row.row.original.producto_id}`}
                   className="p-1 bg-blue-400 rounded-md"
                >
                   Editar
-               </button>
+               </Link>
                <button
-                  onClick={() =>
-                     console.log('Eliminar', row.row.original.producto_id)
-                  }
+                  onClick={() => deleteProduct(row.row.original.producto_id)}
                   className="p-1 bg-red-400 rounded-md"
                >
                   Eliminar
@@ -53,7 +56,10 @@ const InventarioPage = () => {
          ),
       },
    ];
-
+   console.log(products);
+   useEffect(() => {
+      getAllProducts();
+   }, []);
    return (
       <div>
          <div>
@@ -75,14 +81,27 @@ const InventarioPage = () => {
                   />
                </div>
             </div>
-            <Table
-               data={products}
-               columns={columns}
-               filtering={filtering}
-               setFiltering={setFiltering}
-               sorting={sorting}
-               setSorting={setSorting}
-            />
+            {products.length === 0 && (
+               <div className="font-bold text-2xl h-60 flex items-center">
+                  No hay productos registrados en el Inventario
+               </div>
+            )}
+            {products?.products?.length === 0 && (
+               <div className="font-bold text-2xl h-60 flex items-center">
+                  No hay productos registrados en el Inventario
+               </div>
+            )}
+
+            {products?.products?.length > 0 && (
+               <Table
+                  data={products}
+                  columns={columns}
+                  sorting={sorting}
+                  setSorting={setSorting}
+                  filtering={filtering}
+                  setFiltering={setFiltering}
+               />
+            )}
          </div>
       </div>
    );
