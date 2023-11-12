@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 const NavbarLinks = ({ link, text, children }) => {
    return (
       <Link
-         className="hover:text-gray-800 hover:bg-gray-100 flex items-center p-2 my-6 transition-colors   text-gray-600  "
+         className="hover:text-gray-800 hover:scale-105 hover:bg-red-300 rounded-sm flex items-center p-2 my-6  transition-all   text-gray-800  "
          to={link}
       >
          <div>{children}</div>

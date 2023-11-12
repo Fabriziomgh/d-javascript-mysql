@@ -9,6 +9,7 @@ import {
 } from '../api/productsRequest';
 export const ProductsContext = createContext();
 import { ToastDelete, ToastMessage } from '../alerts/alerts';
+import { formatDate } from '../libs/formatear-fecha';
 export const ProductsProvider = ({ children }) => {
    const [products, setProducts] = useState([]);
    const [ubicaciones, setUbicaciones] = useState([]);
@@ -16,7 +17,14 @@ export const ProductsProvider = ({ children }) => {
    const getAllProducts = async () => {
       try {
          const products = await getAllProductsRequest();
-         setProducts(products.data);
+         const newProducts = products.data.products.map((product) => {
+            const newFecha = formatDate(product?.fecha_creacion);
+            return {
+               ...product,
+               fecha_creacion: newFecha,
+            };
+         });
+         setProducts({ products: newProducts });
          setLoading(false);
       } catch (error) {
          console.log(error);

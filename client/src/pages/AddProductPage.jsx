@@ -62,7 +62,9 @@ const AddProductPage = () => {
          <Toaster />
          <div className="flex flex-col max-w-md px-4 py-8 bg-white rounded-lg shadow ">
             <div className="self-center  text-2xl  font-bold text-gray-800  ">
-               Agregar producto al inventario
+               {params.id
+                  ? `Modificando producto con ID: ${params.id}`
+                  : 'Agregar producto al inventario'}
             </div>
 
             <div className="p-6 mt-8">
@@ -136,6 +138,7 @@ const AddProductPage = () => {
                            {...register('id_ubicacion')}
                            className=" rounded-lg  flex-1 appearance-none border border-gray-500 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2  focus:"
                         >
+                           <option value="">Seleccionar</option>
                            {ubicaciones?.ubicaciones?.length === 0 ? (
                               <div>Cargando</div>
                            ) : (

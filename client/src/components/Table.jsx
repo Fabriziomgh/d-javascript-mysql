@@ -30,16 +30,16 @@ const Table = ({
       onGlobalFilterChange: setFiltering,
    });
    return (
-      <div>
-         <table className="table p-1 bg-white rounded-lg shadow">
-            <thead>
+      <div className="py-4">
+         <table className="min-w-full divide-y-2 shadow-lg rounded-lg divide-gray-200 bg-white text-sm">
+            <thead className="text-left ">
                {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup?.id}>
                      {headerGroup?.headers?.map((header) => (
                         <th
                            key={header?.id}
                            onClick={header?.column?.getToggleSortingHandler()}
-                           className="border-b-2 py-2 px-2 text-left font-bold  whitespace-nowrap  text-gray-900 bg-red-300"
+                           className="whitespace-nowrap font-bold px-4 py-2  text-gray-900"
                         >
                            <div>
                               {header?.column?.columnDef?.header}
@@ -55,13 +55,13 @@ const Table = ({
                   </tr>
                ))}
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
                {table.getRowModel().rows?.map((row) => (
-                  <tr key={row?.id} className="text-gray-700">
+                  <tr key={row?.id} className="odd:bg-gray-50">
                      {row.getVisibleCells().map((cell) => (
                         <td
                            key={cell?.id}
-                           className="border-b-2 py-4 px-2 text-xs"
+                           className="whitespace-nowrap px-4 py-2 font-medium text-gray-900"
                         >
                            {flexRender(
                               cell?.column?.columnDef?.cell,
@@ -72,27 +72,30 @@ const Table = ({
                   </tr>
                ))}
             </tbody>
-            <div className="flex flex-col items-center px-2 py-2 bg-white">
-               <div className="flex items-center">
-                  <button
-                     onClick={() => table.previousPage()}
-                     type="button"
-                     className="w-full  p-4 text-base text-gray-600 bg-red-400 border rounded-l-xl hover:bg-red-500 transition-colors"
-                  >
-                     <LeftArrow />
-                  </button>
-
-                  <button
-                     onClick={() => table.nextPage()}
-                     disabled={!table.getCanNextPage()}
-                     type="button"
-                     className="w-full p-4 text-base text-gray-600 bg-red-400 border-t border-b border-r rounded-r-xl hover:bg-red-500 transition-colors"
-                  >
-                     <RightArrow />
-                  </button>
-               </div>
-            </div>
          </table>
+
+         <div class="inline-flex items-center justify-center bg-red-200  gap-3">
+            <button
+               onClick={() => table.previousPage()}
+               class="inline-flex h-8 w-8 items-center justify-center  border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+            >
+               <LeftArrow />
+            </button>
+
+            <p class="text-xs text-blac font-bold ">
+               {`Página ${
+                  table.getState().pagination.pageIndex + 1
+               } de ${table.getPageCount()}`}
+            </p>
+
+            <button
+               onClick={() => table.nextPage()}
+               disabled={!table.getCanNextPage()}
+               class="inline-flex h-8 w-8 items-center justify-center  border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+            >
+               <RightArrow />
+            </button>
+         </div>
       </div>
    );
 };
