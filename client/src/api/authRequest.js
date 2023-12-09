@@ -9,3 +9,7 @@ const authRequest = axios.create({
 export const loginRequest = (data) => authRequest.post('/login', data);
 export const verifyTokenRequest = () => authRequest.get(`/verify`);
 export const logoutRequest = () => authRequest.post('/logout');
+export const forgotPasswordRequest = (data) =>
+   authRequest.post('/forgot-password', data);
+export const resetPasswordRequest = (password, token) =>
+   authRequest.post(`/reset-password/${token}`, password);

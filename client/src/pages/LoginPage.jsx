@@ -14,7 +14,6 @@ const LoginPage = () => {
    } = useForm();
    const onSubmit = (data) => {
       login(data);
-      console.log(data);
    };
    const navigate = useNavigate();
    useEffect(() => {
@@ -45,20 +44,19 @@ const LoginPage = () => {
                            <UserIcon />
                         </span>
                         <input
-                           {...register('username', {
+                           {...register('cedula', {
                               required: {
                                  value: true,
-                                 message: 'El usuario es requerido',
+                                 message: 'Este campo es requero.',
                               },
-                              minLength: {
-                                 value: 3,
-                                 message:
-                                    'El usuario debe tener al menos 3 caracteres',
+                              pattern: {
+                                 value: /^[0-9]+$/,
+                                 message: 'Cédula incorrecta',
                               },
                            })}
                            type="text"
                            className=" rounded-r-lg flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2  focus:border-transparent"
-                           placeholder="Usuario..."
+                           placeholder="Cédula..."
                         />
                      </div>
                      {errors.username && (

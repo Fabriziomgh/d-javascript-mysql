@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth-routes.js';
 import productsRouter from './routes/product-routes.js';
 import ubicacionesRouter from './routes/ubicaciones-routes.js';
+import usersRouter from './routes/users-routes.js';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/ubicaciones', ubicacionesRouter);
 

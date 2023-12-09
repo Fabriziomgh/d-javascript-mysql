@@ -11,6 +11,7 @@ import {
 import { useAuth } from '../hooks/auth';
 const Navbar = () => {
    const { users, logout } = useAuth();
+   console.log(users);
 
    return (
       <div className="relative bg-gradient-to-b from-red-400 to-red-400 h-full shadow-lg rounded-tr rounded-br ">
@@ -22,13 +23,18 @@ const Navbar = () => {
                      src={userLogo}
                   />
                   <span className="capitalize  ml-4  text-2xl  text-gray-900 font-bold">
-                     {users?.user ? users?.user : 'Usuario'}
+                     {users?.username ? users?.username : 'Usuario'}
                   </span>
                </div>
                <nav className="mt-10 px-6 ">
                   <NavbarLinks text="Inicio" link="/inicio">
                      <HomeIcon />
                   </NavbarLinks>
+                  {users.id_rol === 1 && (
+                     <NavbarLinks text="Usuarios" link="/usuarios">
+                        <UserIcon />
+                     </NavbarLinks>
+                  )}
                   <NavbarLinks text="Inventario" link="/inventario">
                      <StorageIcon />
                   </NavbarLinks>
@@ -37,9 +43,6 @@ const Navbar = () => {
                   </NavbarLinks>
                   <NavbarLinks text="Ubicaciones" link="/ubicaciones">
                      <OfficeIcon />
-                  </NavbarLinks>
-                  <NavbarLinks text="Usuarios" link="/usuarios">
-                     <UserIcon />
                   </NavbarLinks>
                </nav>
                <div className="absolute bottom-0 my-10">

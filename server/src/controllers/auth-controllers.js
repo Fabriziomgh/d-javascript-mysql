@@ -3,7 +3,6 @@ import { AuthModel } from '../models/auth-models.js';
 import { createToken } from '../libs/create-token.js';
 import { sendMail } from '../libs/send-mail.js';
 import { verifyToken } from '../libs/verify-token.js';
-import { API_URL } from '../config.js';
 
 export const register = async (req, res) => {
    try {
@@ -13,10 +12,7 @@ export const register = async (req, res) => {
             .status(400)
             .json({ error: 'Este correo o usuario ya existe' });
 
-      return res.status(201).json({
-         user: user.username,
-         email: user.email,
-      });
+      return res.status(201).json(user);
    } catch (error) {
       return res.status(500).json(error);
    }
@@ -24,7 +20,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
    try {
-      const user = await AuthModel.login(req.body.username);
+      const user = await AuthModel.login(req.body.cedula);
       if (user === null)
          return res.status(400).json({ message: 'Este usuario no existe' });
 
@@ -40,10 +36,7 @@ export const login = async (req, res) => {
 
       const token = await createToken({ id: user.user_id });
       res.cookie('token', token);
-      res.status(200).json({
-         user: user.username,
-         email: user.email,
-      });
+      res.status(200).json(user);
    } catch (error) {
       console.log(error);
       return res.status(500).json(error.message);
@@ -51,20 +44,22 @@ export const login = async (req, res) => {
 };
 
 export const forgotPassword = async (req, res) => {
+   const { email } = req.body;
    try {
-      const user = await AuthModel.login(req.body.email);
+      const user = await AuthModel.findByEmail({ email });
 
-      if (user === null)
+      if (!user)
          return res.status(404).json({
             message: 'Usuario no encontrado',
          });
-      const token = await createToken({ id: user.user_id }, 900);
 
+      const token = await createToken({ id: user.user_id }, 900);
+      console.log(token);
       await sendMail(
          user.email,
          'Restablecer Contraseña',
          `Para restablecer su contraseña,haga click en el siguiente enlace:\n\n
-           ${API_URL}/reset-password/${token}`,
+         http://localhost:5173/nueva-clave/${token.replaceAll('.', '$')}`,
          (err, info) => {
             if (err) return res.status(500).json(err);
             return res.status(200).json({
@@ -82,15 +77,26 @@ export const forgotPassword = async (req, res) => {
 export const resetPassword = async (req, res) => {
    const { token } = req.params;
    const { password } = req.body;
+
    try {
       const { id } = await verifyToken(token);
+      console.log(id, password);
+      if (!password)
+         return res
+            .status(400)
+            .json({ message: 'Error al intentar actualizar la clave' });
+      const updatePassword = await AuthModel.resetPassword({
+         id,
+         newPassword: password,
+      });
 
-      const updatePassword = await AuthModel.resetPassword(id, password);
+      console.log(updatePassword);
       res.send({
          updatePassword,
       });
    } catch (error) {
-      return res.status(400).json({ status: 'Fallido', error });
+      console.log(error);
+      return res.status(400).json({ message: 'Fallido', error });
    }
 };
 
@@ -121,8 +127,5 @@ export const verifyT = async (req, res) => {
    const user = await AuthModel.profile(id);
    if (!user) return res.status(401);
 
-   return res.json({
-      user: user.username,
-      email: user.email,
-   });
+   return res.json(user);
 };
